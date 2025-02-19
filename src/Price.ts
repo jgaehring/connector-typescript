@@ -79,14 +79,6 @@ export default class Price extends SemanticObjectAnonymous implements IPrice {
 		
 	}
 
-	public getQuantityValue(): number | undefined {
-		return Number(this.getSemanticProperty("dfc-b:value"));
-	}
-
-	public getVatRate(): number | undefined {
-		return Number(this.getSemanticProperty("dfc-b:VATrate"));
-	}
-
 	public setVatRate(vatRate: number): void {
 		this.setSemanticPropertyLiteral("dfc-b:VATrate", vatRate);
 	}
@@ -105,6 +97,14 @@ export default class Price extends SemanticObjectAnonymous implements IPrice {
 			if (semanticObject) result = <ISKOSConcept> semanticObject;
 		}
 		return result;
+	}
+
+	public getQuantityValue(): number | undefined {
+		return Number(this.getSemanticProperty("dfc-b:value"));
+	}
+
+	public getVatRate(): number | undefined {
+		return Number(this.getSemanticProperty("dfc-b:VATrate"));
 	}
 
 	public setQuantityValue(quantityValue: number): void {

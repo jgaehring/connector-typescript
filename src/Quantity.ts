@@ -74,10 +74,6 @@ export default class Quantity extends SemanticObjectAnonymous implements IQuanti
 		
 	}
 
-	public getQuantityValue(): number | undefined {
-		return Number(this.getSemanticProperty("dfc-b:value"));
-	}
-
 	public setQuantityUnit(quantityUnit: ISKOSConcept): void {
 		this.setSemanticPropertyReference("dfc-b:hasUnit", quantityUnit);
 		
@@ -92,6 +88,10 @@ export default class Quantity extends SemanticObjectAnonymous implements IQuanti
 			if (semanticObject) result = <ISKOSConcept> semanticObject;
 		}
 		return result;
+	}
+
+	public getQuantityValue(): number | undefined {
+		return Number(this.getSemanticProperty("dfc-b:value"));
 	}
 
 	public setQuantityValue(quantityValue: number): void {

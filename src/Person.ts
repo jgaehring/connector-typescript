@@ -21,8 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 */
-import IAddress from "./IAddress.js"
 import IEnterprise from "./IEnterprise.js"
+import IAddress from "./IAddress.js"
 import IPerson from "./IPerson.js"
 import Agent from "./Agent.js"
 import { SemanticObject } from "@virtual-assembly/semantizer"
@@ -84,24 +84,8 @@ export default class Person extends Agent implements IPerson {
 		
 	}
 
-	public getFirstName(): string | undefined {
-		return this.getSemanticProperty("dfc-b:firstName");
-	}
-
-	public getLastName(): string | undefined {
-		return this.getSemanticProperty("dfc-b:familyName");
-	}
-
 	public setLastName(lastName: string): void {
 		this.setSemanticPropertyLiteral("dfc-b:familyName", lastName);
-	}
-
-	public leaveAffiliatedOrganization(organization: IEnterprise): void {
-		throw new Error("Not yet implemented.");
-	}
-
-	public setFirstName(firstName: string): void {
-		this.setSemanticPropertyLiteral("dfc-b:firstName", firstName);
 	}
 
 	public affiliateTo(organization: IEnterprise): void {
@@ -114,6 +98,10 @@ export default class Person extends Agent implements IPerson {
 		}
 	}
 
+	public leaveAffiliatedOrganization(organization: IEnterprise): void {
+		throw new Error("Not yet implemented.");
+	}
+
 	public async getAffiliatedOrganizations(options?: IGetterOptions): Promise<IEnterprise[]> {
 		const results = new Array<IEnterprise>();
 		const properties = this.getSemanticPropertyAll("dfc-b:affiliates");
@@ -122,5 +110,17 @@ export default class Person extends Agent implements IPerson {
 			if (semanticObject) results.push(<IEnterprise>semanticObject);
 		}
 		return results;
+	}
+
+	public getFirstName(): string | undefined {
+		return this.getSemanticProperty("dfc-b:firstName");
+	}
+
+	public getLastName(): string | undefined {
+		return this.getSemanticProperty("dfc-b:familyName");
+	}
+
+	public setFirstName(firstName: string): void {
+		this.setSemanticPropertyLiteral("dfc-b:firstName", firstName);
 	}
 }

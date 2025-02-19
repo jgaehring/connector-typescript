@@ -1,11 +1,11 @@
-import ICatalogItem from "./ICatalogItem.js";
-import ISuppliedProduct from "./ISuppliedProduct.js";
 import ISKOSConcept from "./ISKOSConcept.js";
+import ISuppliedProduct from "./ISuppliedProduct.js";
+import IAllergenCharacteristic from "./IAllergenCharacteristic.js";
+import INutrientCharacteristic from "./INutrientCharacteristic.js";
 import IPhysicalCharacteristic from "./IPhysicalCharacteristic.js";
 import DefinedProduct from "./DefinedProduct.js";
-import INutrientCharacteristic from "./INutrientCharacteristic.js";
+import ICatalogItem from "./ICatalogItem.js";
 import IQuantity from "./IQuantity.js";
-import IAllergenCharacteristic from "./IAllergenCharacteristic.js";
 import { Semanticable } from "@virtual-assembly/semantizer";
 import IConnector from "./IConnector.js";
 export default class SuppliedProduct extends DefinedProduct implements ISuppliedProduct {

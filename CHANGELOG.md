@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - None
 
-## [1.0.0-alpha.9] - 2024-03-20
+## [1.0.0-alpha.9] - 2024-03-21
 
 ### Changed
 
@@ -163,6 +163,7 @@ See the SUPPORTED.md file [comparison from main to next](https://github.com/data
 - Initial release.
 
 [unreleased]: https://github.com/datafoodconsortium/connector-typescript/compare/v1.0.0-alpha.9...HEAD
+[1.0.0-alpha.9]: https://github.com/datafoodconsortium/connector-typescript/compare/v1.0.0-alpha.9...v1.0.0-alpha.10
 [1.0.0-alpha.9]: https://github.com/datafoodconsortium/connector-typescript/compare/v1.0.0-alpha.8...v1.0.0-alpha.9
 [1.0.0-alpha.8]: https://github.com/datafoodconsortium/connector-typescript/compare/v1.0.0-alpha.7...v1.0.0-alpha.8
 [1.0.0-alpha.7]: https://github.com/datafoodconsortium/connector-typescript/compare/v1.0.0-alpha.6...v1.0.0-alpha.7

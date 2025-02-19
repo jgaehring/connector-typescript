@@ -21,15 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 */
-import ICatalogItem from "./ICatalogItem.js"
 import IDefinedProduct from "./IDefinedProduct.js"
 import ISKOSConcept from "./ISKOSConcept.js"
-import IPhysicalCharacteristic from "./IPhysicalCharacteristic.js"
-import INutrientCharacteristic from "./INutrientCharacteristic.js"
-import IQuantity from "./IQuantity.js"
 import IAllergenCharacteristic from "./IAllergenCharacteristic.js"
+import INutrientCharacteristic from "./INutrientCharacteristic.js"
+import IPhysicalCharacteristic from "./IPhysicalCharacteristic.js"
+import ICatalogItem from "./ICatalogItem.js"
+import IQuantity from "./IQuantity.js"
 import { SemanticObject } from "@virtual-assembly/semantizer"
 import { Semanticable } from "@virtual-assembly/semantizer"
+import ConnectorStoreMap from "./ConnectorStoreMap.js";
 import IConnector from "./IConnector.js";
 import IGetterOptions from "./IGetterOptions.js";
 
@@ -59,6 +60,8 @@ export default abstract class DefinedProduct extends SemanticObject implements I
 		natureOrigin?: ISKOSConcept[],
 		partOrigin?: ISKOSConcept[],
 		images?: string[],
+		variants?: IDefinedProduct[],
+		isVariantOf?: IDefinedProduct[],
 		doNotStore?: boolean,
 	}) {
 		
@@ -147,63 +150,22 @@ export default abstract class DefinedProduct extends SemanticObject implements I
 			parameters.images.forEach(e => this.addImage(e));
 		}
 		
-	}
-
-	public setQuantity(quantity: IQuantity): void {
-		this.setSemanticPropertyAnonymous("dfc-b:hasQuantity", quantity);
+		if (parameters.variants) {
+			parameters.variants.forEach(e => this.addVariant(e));
+		}
 		
-	}
-
-	public setName(name: string): void {
-		this.setSemanticPropertyLiteral("dfc-b:name", name);
-	}
-
-	public addPartOrigin(partOrigin: ISKOSConcept): void {
-		if (partOrigin.isSemanticObjectAnonymous()) {
-			this.addSemanticPropertyAnonymous("dfc-b:hasPartOrigin", partOrigin);
+		if (parameters.isVariantOf) {
+			parameters.isVariantOf.forEach(e => this.addIsVariantOf(e));
 		}
-		else {
-			this.connector.store(partOrigin);
-			this.addSemanticPropertyReference("dfc-b:hasPartOrigin", partOrigin);
-		}
-	}
-
-	public getDescription(): string | undefined {
-		return this.getSemanticProperty("dfc-b:description");
-	}
-
-	public setAlcoholPercentage(alcoholPercentage: number): void {
-		this.setSemanticPropertyLiteral("dfc-b:alcoholPercentage", alcoholPercentage);
-	}
-
-	public addNutrientCharacteristic(nutrientCharacteristic: INutrientCharacteristic): void {
-		if (nutrientCharacteristic.isSemanticObjectAnonymous()) {
-			this.addSemanticPropertyAnonymous("dfc-b:hasNutrientCharacteristic", nutrientCharacteristic);
-		}
-		else {
-			this.connector.store(nutrientCharacteristic);
-			this.addSemanticPropertyReference("dfc-b:hasNutrientCharacteristic", nutrientCharacteristic);
-		}
-	}
-
-	public removeCertification(certification: ISKOSConcept): void {
-		throw new Error("Not yet implemented.");
-	}
-
-	public addImage(image: string): void {
-		this.addSemanticPropertyLiteral("dfc-b:image", image);
+		
 	}
 
 	public removeClaim(claim: ISKOSConcept): void {
 		throw new Error("Not yet implemented.");
 	}
 
-	public getUsageOrStorageConditions(): string | undefined {
-		return this.getSemanticProperty("dfc-b:usageOrStorageCondition");
-	}
-
-	public removeNatureOrigin(natureOrigin: ISKOSConcept): void {
-		throw new Error("Not yet implemented.");
+	public setName(name: string): void {
+		this.setSemanticPropertyLiteral("dfc-b:name", name);
 	}
 
 	public addCatalogItem(catalogItem: ICatalogItem): void {
@@ -216,58 +178,31 @@ export default abstract class DefinedProduct extends SemanticObject implements I
 		}
 	}
 
-	public getAlcoholPercentage(): number | undefined {
-		return Number(this.getSemanticProperty("dfc-b:alcoholPercentage"));
+	public setVariants(variants: IDefinedProduct[]): void {
+		const store = new ConnectorStoreMap();
+		variants.forEach((idefinedproduct) => {
+			this.addSemanticPropertyReference("dfc-b:hasVariant", idefinedproduct, true);
+			store.set(idefinedproduct);
+		});
 	}
 
-	public async getNatureOrigin(options?: IGetterOptions): Promise<ISKOSConcept[]> {
-		const results = new Array<ISKOSConcept>();
-		const properties = this.getSemanticPropertyAll("dfc-b:hasNatureOrigin");
-		for await (const semanticId of properties) {
-			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
-			if (semanticObject) results.push(<ISKOSConcept>semanticObject);
-		}
-		return results;
-	}
-
-	public getLifetime(): string | undefined {
-		return this.getSemanticProperty("dfc-b:lifetime");
-	}
-
-	public setUsageOrStorageConditions(usageOrStorageConditions: string): void {
-		this.setSemanticPropertyLiteral("dfc-b:usageOrStorageCondition", usageOrStorageConditions);
-	}
-
-	public getQuantity(): IQuantity | undefined {
-		const blankNode: any = this.getSemanticPropertyAnonymous("dfc-b:hasQuantity");
-		return <IQuantity> this.connector.getDefaultFactory().createFromRdfDataset(blankNode);
-	}
-
-	public setLifetime(lifetime: string): void {
-		this.setSemanticPropertyLiteral("dfc-b:lifetime", lifetime);
-	}
-
-	public getImages(): string[] {
-		return this.getSemanticPropertyAll("dfc-b:image");
-	}
-
-	public async getCatalogItems(options?: IGetterOptions): Promise<ICatalogItem[]> {
-		const results = new Array<ICatalogItem>();
-		const properties = this.getSemanticPropertyAll("dfc-b:referencedBy");
-		for await (const semanticId of properties) {
-			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
-			if (semanticObject) results.push(<ICatalogItem>semanticObject);
-		}
-		return results;
-	}
-
-	public addNatureOrigin(natureOrigin: ISKOSConcept): void {
-		if (natureOrigin.isSemanticObjectAnonymous()) {
-			this.addSemanticPropertyAnonymous("dfc-b:hasNatureOrigin", natureOrigin);
+	public addIsVariantOf(parent: IDefinedProduct): void {
+		if (parent.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:isVariantOf", parent);
 		}
 		else {
-			this.connector.store(natureOrigin);
-			this.addSemanticPropertyReference("dfc-b:hasNatureOrigin", natureOrigin);
+			this.connector.store(parent);
+			this.addSemanticPropertyReference("dfc-b:isVariantOf", parent);
+		}
+	}
+
+	public addCertification(certification: ISKOSConcept): void {
+		if (certification.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:hasCertification", certification);
+		}
+		else {
+			this.connector.store(certification);
+			this.addSemanticPropertyReference("dfc-b:hasCertification", certification);
 		}
 	}
 
@@ -281,26 +216,101 @@ export default abstract class DefinedProduct extends SemanticObject implements I
 		}
 	}
 
-	public removeNutrientCharacteristic(nutrientCharacteristic: INutrientCharacteristic): void {
+	public getQuantity(): IQuantity | undefined {
+		const blankNode: any = this.getSemanticPropertyAnonymous("dfc-b:hasQuantity");
+		return <IQuantity> this.connector.getDefaultFactory().createFromRdfDataset(blankNode);
+	}
+
+	public setProductType(productType: ISKOSConcept): void {
+		this.setSemanticPropertyReference("dfc-b:hasType", productType);
+		
+		this.connector.store(productType);
+	}
+
+	public async getVariants(options?: IGetterOptions): Promise<IDefinedProduct[]> {
+		const results = new Array<IDefinedProduct>();
+		const properties = this.getSemanticPropertyAll("dfc-b:hasVariant");
+		for await (const semanticId of properties) {
+			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
+			if (semanticObject) results.push(<IDefinedProduct>semanticObject);
+		}
+		return results;
+	}
+
+	public getUsageOrStorageConditions(): string | undefined {
+		return this.getSemanticProperty("dfc-b:usageOrStorageCondition");
+	}
+
+	public async getNutrientCharacteristics(options?: IGetterOptions): Promise<INutrientCharacteristic[]> {
+		const results = new Array<INutrientCharacteristic>();
+		const blankNodesId = this.getSemanticPropertyAnonymousAll("dfc-b:hasNutrientCharacteristic");
+		blankNodesId.forEach(blankNodeId => {
+			const blankNode = <INutrientCharacteristic> this.connector.getDefaultFactory().createFromRdfDataset(blankNodeId);
+			results.push(blankNode);
+		});
+		return results;
+	}
+
+	public addPartOrigin(partOrigin: ISKOSConcept): void {
+		if (partOrigin.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:hasPartOrigin", partOrigin);
+		}
+		else {
+			this.connector.store(partOrigin);
+			this.addSemanticPropertyReference("dfc-b:hasPartOrigin", partOrigin);
+		}
+	}
+
+	public removeNatureOrigin(natureOrigin: ISKOSConcept): void {
 		throw new Error("Not yet implemented.");
 	}
 
-	public setDescription(description: string): void {
-		this.setSemanticPropertyLiteral("dfc-b:description", description);
+	public removeCertification(certification: ISKOSConcept): void {
+		throw new Error("Not yet implemented.");
 	}
 
-	public addAllergenCharacteristic(allergenCharacteristic: IAllergenCharacteristic): void {
-		if (allergenCharacteristic.isSemanticObjectAnonymous()) {
-			this.addSemanticPropertyAnonymous("dfc-b:hasAllergenCharacteristic", allergenCharacteristic);
-		}
-		else {
-			this.connector.store(allergenCharacteristic);
-			this.addSemanticPropertyReference("dfc-b:hasAllergenCharacteristic", allergenCharacteristic);
-		}
+	public removePartOrigin(partOrigin: ISKOSConcept): void {
+		throw new Error("Not yet implemented.");
+	}
+
+	public setIsVariantOf(parents: IDefinedProduct[]): void {
+		const store = new ConnectorStoreMap();
+		parents.forEach((idefinedproduct) => {
+			this.addSemanticPropertyReference("dfc-b:isVariantOf", idefinedproduct, true);
+			store.set(idefinedproduct);
+		});
 	}
 
 	public removePhysicalCharacteristic(physicalCharacteristic: IPhysicalCharacteristic): void {
 		throw new Error("Not yet implemented.");
+	}
+
+	public setLifetime(lifetime: string): void {
+		this.setSemanticPropertyLiteral("dfc-b:lifetime", lifetime);
+	}
+
+	public addPhysicalCharacteristic(physicalCharacteristic: IPhysicalCharacteristic): void {
+		if (physicalCharacteristic.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:hasPhysicalCharacteristic", physicalCharacteristic);
+		}
+		else {
+			this.connector.store(physicalCharacteristic);
+			this.addSemanticPropertyReference("dfc-b:hasPhysicalCharacteristic", physicalCharacteristic);
+		}
+	}
+
+	public removeVariant(variant: IDefinedProduct): void {
+		throw new Error("Not yet implemented.");
+	}
+
+	public async getIsVariantOf(options?: IGetterOptions): Promise<IDefinedProduct[]> {
+		const results = new Array<IDefinedProduct>();
+		const properties = this.getSemanticPropertyAll("dfc-b:isVariantOf");
+		for await (const semanticId of properties) {
+			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
+			if (semanticObject) results.push(<IDefinedProduct>semanticObject);
+		}
+		return results;
 	}
 
 	public async getProductType(options?: IGetterOptions): Promise<ISKOSConcept | undefined> {
@@ -323,76 +333,14 @@ export default abstract class DefinedProduct extends SemanticObject implements I
 		return results;
 	}
 
-	public addPhysicalCharacteristic(physicalCharacteristic: IPhysicalCharacteristic): void {
-		if (physicalCharacteristic.isSemanticObjectAnonymous()) {
-			this.addSemanticPropertyAnonymous("dfc-b:hasPhysicalCharacteristic", physicalCharacteristic);
-		}
-		else {
-			this.connector.store(physicalCharacteristic);
-			this.addSemanticPropertyReference("dfc-b:hasPhysicalCharacteristic", physicalCharacteristic);
-		}
-	}
-
-	public setProductType(productType: ISKOSConcept): void {
-		this.setSemanticPropertyReference("dfc-b:hasType", productType);
-		
-		this.connector.store(productType);
-	}
-
-	public getName(): string | undefined {
-		return this.getSemanticProperty("dfc-b:name");
-	}
-
-	public async getClaims(options?: IGetterOptions): Promise<ISKOSConcept[]> {
+	public async getNatureOrigin(options?: IGetterOptions): Promise<ISKOSConcept[]> {
 		const results = new Array<ISKOSConcept>();
-		const properties = this.getSemanticPropertyAll("dfc-b:hasClaim");
+		const properties = this.getSemanticPropertyAll("dfc-b:hasNatureOrigin");
 		for await (const semanticId of properties) {
 			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
 			if (semanticObject) results.push(<ISKOSConcept>semanticObject);
 		}
 		return results;
-	}
-
-	public async getNutrientCharacteristics(options?: IGetterOptions): Promise<INutrientCharacteristic[]> {
-		const results = new Array<INutrientCharacteristic>();
-		const blankNodesId = this.getSemanticPropertyAnonymousAll("dfc-b:hasNutrientCharacteristic");
-		blankNodesId.forEach(blankNodeId => {
-			const blankNode = <INutrientCharacteristic> this.connector.getDefaultFactory().createFromRdfDataset(blankNodeId);
-			results.push(blankNode);
-		});
-		return results;
-	}
-
-	public async getPhysicalCharacteristics(options?: IGetterOptions): Promise<IPhysicalCharacteristic[]> {
-		const results = new Array<IPhysicalCharacteristic>();
-		const blankNodesId = this.getSemanticPropertyAnonymousAll("dfc-b:hasPhysicalCharacteristic");
-		blankNodesId.forEach(blankNodeId => {
-			const blankNode = <IPhysicalCharacteristic> this.connector.getDefaultFactory().createFromRdfDataset(blankNodeId);
-			results.push(blankNode);
-		});
-		return results;
-	}
-
-	public addCertification(certification: ISKOSConcept): void {
-		if (certification.isSemanticObjectAnonymous()) {
-			this.addSemanticPropertyAnonymous("dfc-b:hasCertification", certification);
-		}
-		else {
-			this.connector.store(certification);
-			this.addSemanticPropertyReference("dfc-b:hasCertification", certification);
-		}
-	}
-
-	public removeImage(image: string): void {
-		throw new Error("Not yet implemented.");
-	}
-
-	public removeAllergenCharacteristic(allergenCharacteristic: IAllergenCharacteristic): void {
-		throw new Error("Not yet implemented.");
-	}
-
-	public removePartOrigin(partOrigin: ISKOSConcept): void {
-		throw new Error("Not yet implemented.");
 	}
 
 	public async getGeographicalOrigin(options?: IGetterOptions): Promise<ISKOSConcept | undefined> {
@@ -405,6 +353,113 @@ export default abstract class DefinedProduct extends SemanticObject implements I
 		return result;
 	}
 
+	public getImages(): string[] {
+		return this.getSemanticPropertyAll("dfc-b:image");
+	}
+
+	public getDescription(): string | undefined {
+		return this.getSemanticProperty("dfc-b:description");
+	}
+
+	public setGeographicalOrigin(geographicalOrigin: ISKOSConcept): void {
+		this.setSemanticPropertyReference("dfc-b:hasGeographicalOrigin", geographicalOrigin);
+		
+		this.connector.store(geographicalOrigin);
+	}
+
+	public addNutrientCharacteristic(nutrientCharacteristic: INutrientCharacteristic): void {
+		if (nutrientCharacteristic.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:hasNutrientCharacteristic", nutrientCharacteristic);
+		}
+		else {
+			this.connector.store(nutrientCharacteristic);
+			this.addSemanticPropertyReference("dfc-b:hasNutrientCharacteristic", nutrientCharacteristic);
+		}
+	}
+
+	public setQuantity(quantity: IQuantity): void {
+		this.setSemanticPropertyAnonymous("dfc-b:hasQuantity", quantity);
+		
+	}
+
+	public addAllergenCharacteristic(allergenCharacteristic: IAllergenCharacteristic): void {
+		if (allergenCharacteristic.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:hasAllergenCharacteristic", allergenCharacteristic);
+		}
+		else {
+			this.connector.store(allergenCharacteristic);
+			this.addSemanticPropertyReference("dfc-b:hasAllergenCharacteristic", allergenCharacteristic);
+		}
+	}
+
+	public async getClaims(options?: IGetterOptions): Promise<ISKOSConcept[]> {
+		const results = new Array<ISKOSConcept>();
+		const properties = this.getSemanticPropertyAll("dfc-b:hasClaim");
+		for await (const semanticId of properties) {
+			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
+			if (semanticObject) results.push(<ISKOSConcept>semanticObject);
+		}
+		return results;
+	}
+
+	public removeImage(image: string): void {
+		throw new Error("Not yet implemented.");
+	}
+
+	public addNatureOrigin(natureOrigin: ISKOSConcept): void {
+		if (natureOrigin.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:hasNatureOrigin", natureOrigin);
+		}
+		else {
+			this.connector.store(natureOrigin);
+			this.addSemanticPropertyReference("dfc-b:hasNatureOrigin", natureOrigin);
+		}
+	}
+
+	public addVariant(variant: IDefinedProduct): void {
+		if (variant.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:hasVariant", variant);
+		}
+		else {
+			this.connector.store(variant);
+			this.addSemanticPropertyReference("dfc-b:hasVariant", variant);
+		}
+	}
+
+	public getAlcoholPercentage(): number | undefined {
+		return Number(this.getSemanticProperty("dfc-b:alcoholPercentage"));
+	}
+
+	public removeAllergenCharacteristic(allergenCharacteristic: IAllergenCharacteristic): void {
+		throw new Error("Not yet implemented.");
+	}
+
+	public removeNutrientCharacteristic(nutrientCharacteristic: INutrientCharacteristic): void {
+		throw new Error("Not yet implemented.");
+	}
+
+	public getName(): string | undefined {
+		return this.getSemanticProperty("dfc-b:name");
+	}
+
+	public removeIsVariantOf(parent: IDefinedProduct): void {
+		throw new Error("Not yet implemented.");
+	}
+
+	public setAlcoholPercentage(alcoholPercentage: number): void {
+		this.setSemanticPropertyLiteral("dfc-b:alcoholPercentage", alcoholPercentage);
+	}
+
+	public async getCatalogItems(options?: IGetterOptions): Promise<ICatalogItem[]> {
+		const results = new Array<ICatalogItem>();
+		const properties = this.getSemanticPropertyAll("dfc-b:referencedBy");
+		for await (const semanticId of properties) {
+			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
+			if (semanticObject) results.push(<ICatalogItem>semanticObject);
+		}
+		return results;
+	}
+
 	public async getCertifications(options?: IGetterOptions): Promise<ISKOSConcept[]> {
 		const results = new Array<ISKOSConcept>();
 		const properties = this.getSemanticPropertyAll("dfc-b:hasCertification");
@@ -413,6 +468,18 @@ export default abstract class DefinedProduct extends SemanticObject implements I
 			if (semanticObject) results.push(<ISKOSConcept>semanticObject);
 		}
 		return results;
+	}
+
+	public getLifetime(): string | undefined {
+		return this.getSemanticProperty("dfc-b:lifetime");
+	}
+
+	public setDescription(description: string): void {
+		this.setSemanticPropertyLiteral("dfc-b:description", description);
+	}
+
+	public setUsageOrStorageConditions(usageOrStorageConditions: string): void {
+		this.setSemanticPropertyLiteral("dfc-b:usageOrStorageCondition", usageOrStorageConditions);
 	}
 
 	public async getAllergenCharacteristics(options?: IGetterOptions): Promise<IAllergenCharacteristic[]> {
@@ -425,9 +492,17 @@ export default abstract class DefinedProduct extends SemanticObject implements I
 		return results;
 	}
 
-	public setGeographicalOrigin(geographicalOrigin: ISKOSConcept): void {
-		this.setSemanticPropertyReference("dfc-b:hasGeographicalOrigin", geographicalOrigin);
-		
-		this.connector.store(geographicalOrigin);
+	public addImage(image: string): void {
+		this.addSemanticPropertyLiteral("dfc-b:image", image);
+	}
+
+	public async getPhysicalCharacteristics(options?: IGetterOptions): Promise<IPhysicalCharacteristic[]> {
+		const results = new Array<IPhysicalCharacteristic>();
+		const blankNodesId = this.getSemanticPropertyAnonymousAll("dfc-b:hasPhysicalCharacteristic");
+		blankNodesId.forEach(blankNodeId => {
+			const blankNode = <IPhysicalCharacteristic> this.connector.getDefaultFactory().createFromRdfDataset(blankNodeId);
+			results.push(blankNode);
+		});
+		return results;
 	}
 }

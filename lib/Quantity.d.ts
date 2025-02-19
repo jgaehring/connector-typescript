@@ -14,9 +14,9 @@ export default class Quantity extends SemanticObjectAnonymous implements IQuanti
         unit?: ISKOSConcept;
         value?: number;
     });
-    getQuantityValue(): number | undefined;
     setQuantityUnit(quantityUnit: ISKOSConcept): void;
     getQuantityUnit(options?: IGetterOptions): Promise<ISKOSConcept | undefined>;
+    getQuantityValue(): number | undefined;
     setQuantityValue(quantityValue: number): void;
 }
 //# sourceMappingURL=Quantity.d.ts.map
