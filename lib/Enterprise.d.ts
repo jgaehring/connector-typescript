@@ -1,19 +1,19 @@
-import ICatalogItem from "./ICatalogItem.js";
-import ManagedByMainContact from "./ManagedByMainContact.js";
 import ICustomerCategory from "./ICustomerCategory.js";
+import ProductSupplier from "./ProductSupplier.js";
+import ITechnicalProduct from "./ITechnicalProduct.js";
+import IEnterprise from "./IEnterprise.js";
 import ISuppliedProduct from "./ISuppliedProduct.js";
 import IAddress from "./IAddress.js";
-import ProductSupplier from "./ProductSupplier.js";
 import ICatalog from "./ICatalog.js";
-import Onboardable from "./Onboardable.js";
-import IEnterprise from "./IEnterprise.js";
-import ITechnicalProduct from "./ITechnicalProduct.js";
 import IPerson from "./IPerson.js";
+import ManagedByMainContact from "./ManagedByMainContact.js";
 import Agent from "./Agent.js";
+import Onboardable from "./Onboardable.js";
+import ICatalogItem from "./ICatalogItem.js";
 import { Semanticable } from "@virtual-assembly/semantizer";
 import IConnector from "./IConnector.js";
 import IGetterOptions from "./IGetterOptions.js";
-export default class Enterprise extends Agent implements ProductSupplier, Onboardable, IEnterprise, ManagedByMainContact {
+export default class Enterprise extends Agent implements Onboardable, ProductSupplier, ManagedByMainContact, IEnterprise {
     constructor(parameters: {
         connector: IConnector;
         semanticId?: string;
@@ -31,27 +31,27 @@ export default class Enterprise extends Agent implements ProductSupplier, Onboar
         logo?: string;
         doNotStore?: boolean;
     });
-    getManagedCatalogItems(options?: IGetterOptions): Promise<ICatalogItem[]>;
-    addCustomerCategory(customerCategory: ICustomerCategory): void;
-    unmaintainCatalog(catalog: ICatalog): void;
-    setVatNumber(vatNumber: string): void;
-    setDescription(description: string): void;
-    setName(name: string): void;
-    maintainCatalog(catalog: ICatalog): void;
-    getDescription(): string | undefined;
-    supplyProduct(suppliedProduct: ISuppliedProduct): void;
-    getName(): string | undefined;
-    getProposedTechnicalProducts(options?: IGetterOptions): Promise<ITechnicalProduct[]>;
-    unmanageCatalogItem(catalogItem: ICatalogItem): void;
-    unproposeTechnicalProducts(technicalProducts: ITechnicalProduct): void;
-    getMaintainedCatalogs(options?: IGetterOptions): Promise<ICatalog[]>;
-    setMainContact(mainContact: IPerson): void;
-    unsupplyProduct(suppliedProduct: ISuppliedProduct): void;
-    getCustomerCategories(options?: IGetterOptions): Promise<ICustomerCategory[]>;
-    getMainContact(options?: IGetterOptions): Promise<IPerson | undefined>;
-    proposeTechnicalProducts(technicalProducts: ITechnicalProduct): void;
     getVatNumber(): string | undefined;
-    getSuppliedProducts(options?: IGetterOptions): Promise<ISuppliedProduct[]>;
+    unmanageCatalogItem(catalogItem: ICatalogItem): void;
+    setName(name: string): void;
+    getManagedCatalogItems(options?: IGetterOptions): Promise<ICatalogItem[]>;
     manageCatalogItem(catalogItem: ICatalogItem): void;
+    getCustomerCategories(options?: IGetterOptions): Promise<ICustomerCategory[]>;
+    setMainContact(mainContact: IPerson): void;
+    getMaintainedCatalogs(options?: IGetterOptions): Promise<ICatalog[]>;
+    proposeTechnicalProducts(technicalProducts: ITechnicalProduct): void;
+    supplyProduct(suppliedProduct: ISuppliedProduct): void;
+    maintainCatalog(catalog: ICatalog): void;
+    setDescription(description: string): void;
+    getMainContact(options?: IGetterOptions): Promise<IPerson | undefined>;
+    unsupplyProduct(suppliedProduct: ISuppliedProduct): void;
+    getDescription(): string | undefined;
+    addCustomerCategory(customerCategory: ICustomerCategory): void;
+    getProposedTechnicalProducts(options?: IGetterOptions): Promise<ITechnicalProduct[]>;
+    getName(): string | undefined;
+    setVatNumber(vatNumber: string): void;
+    getSuppliedProducts(options?: IGetterOptions): Promise<ISuppliedProduct[]>;
+    unmaintainCatalog(catalog: ICatalog): void;
+    unproposeTechnicalProducts(technicalProducts: ITechnicalProduct): void;
 }
 //# sourceMappingURL=Enterprise.d.ts.map

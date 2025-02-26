@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 */
-import ICatalogItem from "./ICatalogItem.js"
-import ICatalog from "./ICatalog.js"
 import IEnterprise from "./IEnterprise.js"
+import ICatalog from "./ICatalog.js"
+import ICatalogItem from "./ICatalogItem.js"
 import { SemanticObject } from "@virtual-assembly/semantizer"
 import { Semanticable } from "@virtual-assembly/semantizer"
 import IConnector from "./IConnector.js";
@@ -78,12 +78,22 @@ export default class Catalog extends SemanticObject implements ICatalog {
 		
 	}
 
-	public async getItems(options?: IGetterOptions): Promise<ICatalogItem[]> {
-		const results = new Array<ICatalogItem>();
-		const properties = this.getSemanticPropertyAll("dfc-b:lists");
+	public addItem(item: ICatalogItem): void {
+		if (item.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:lists", item);
+		}
+		else {
+			this.connector.store(item);
+			this.addSemanticPropertyReference("dfc-b:lists", item);
+		}
+	}
+
+	public async getMaintainers(options?: IGetterOptions): Promise<IEnterprise[]> {
+		const results = new Array<IEnterprise>();
+		const properties = this.getSemanticPropertyAll("dfc-b:maintainedBy");
 		for await (const semanticId of properties) {
 			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
-			if (semanticObject) results.push(<ICatalogItem>semanticObject);
+			if (semanticObject) results.push(<IEnterprise>semanticObject);
 		}
 		return results;
 	}
@@ -98,26 +108,16 @@ export default class Catalog extends SemanticObject implements ICatalog {
 		}
 	}
 
-	public addItem(item: ICatalogItem): void {
-		if (item.isSemanticObjectAnonymous()) {
-			this.addSemanticPropertyAnonymous("dfc-b:lists", item);
-		}
-		else {
-			this.connector.store(item);
-			this.addSemanticPropertyReference("dfc-b:lists", item);
-		}
-	}
-
 	public removeItem(item: ICatalogItem): void {
 		throw new Error("Not yet implemented.");
 	}
 
-	public async getMaintainers(options?: IGetterOptions): Promise<IEnterprise[]> {
-		const results = new Array<IEnterprise>();
-		const properties = this.getSemanticPropertyAll("dfc-b:maintainedBy");
+	public async getItems(options?: IGetterOptions): Promise<ICatalogItem[]> {
+		const results = new Array<ICatalogItem>();
+		const properties = this.getSemanticPropertyAll("dfc-b:lists");
 		for await (const semanticId of properties) {
 			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
-			if (semanticObject) results.push(<IEnterprise>semanticObject);
+			if (semanticObject) results.push(<ICatalogItem>semanticObject);
 		}
 		return results;
 	}

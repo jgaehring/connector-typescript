@@ -22,8 +22,8 @@
  * SOFTWARE.
 */
 import ISKOSConcept from "./ISKOSConcept.js"
-import IPhysicalCharacteristic from "./IPhysicalCharacteristic.js"
 import Characteristic from "./Characteristic.js"
+import IPhysicalCharacteristic from "./IPhysicalCharacteristic.js"
 import { SemanticObjectAnonymous } from "@virtual-assembly/semantizer"
 import { Semanticable } from "@virtual-assembly/semantizer"
 import IConnector from "./IConnector.js";

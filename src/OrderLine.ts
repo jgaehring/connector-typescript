@@ -22,9 +22,9 @@
  * SOFTWARE.
 */
 import IOrderLine from "./IOrderLine.js"
-import IOrder from "./IOrder.js"
-import IPrice from "./IPrice.js"
 import IOffer from "./IOffer.js"
+import IPrice from "./IPrice.js"
+import IOrder from "./IOrder.js"
 import { SemanticObject } from "@virtual-assembly/semantizer"
 import { Semanticable } from "@virtual-assembly/semantizer"
 import IConnector from "./IConnector.js";
@@ -89,14 +89,14 @@ export default class OrderLine extends SemanticObject implements IOrderLine {
 		
 	}
 
-	public setOffer(offer: IOffer): void {
-		this.setSemanticPropertyReference("dfc-b:concerns", offer);
-		
-		this.connector.store(offer);
-	}
-
-	public getQuantity(): number | undefined {
-		return Number(this.getSemanticProperty("dfc-b:quantity"));
+	public async getOrder(options?: IGetterOptions): Promise<IOrder | undefined> {
+		let result: IOrder | undefined = undefined;
+		const semanticId = this.getSemanticProperty("dfc-b:partOf");
+		if (semanticId) {
+			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
+			if (semanticObject) result = <IOrder> semanticObject;
+		}
+		return result;
 	}
 
 	public setDescription(description: string): void {
@@ -109,23 +109,23 @@ export default class OrderLine extends SemanticObject implements IOrderLine {
 		this.connector.store(order);
 	}
 
+	public setPrice(price: IPrice): void {
+		this.setSemanticPropertyAnonymous("dfc-b:hasPrice", price);
+		
+	}
+
 	public getDescription(): string | undefined {
 		return this.getSemanticProperty("dfc-b:description");
 	}
 
-	public getPrice(): IPrice | undefined {
-		const blankNode: any = this.getSemanticPropertyAnonymous("dfc-b:hasPrice");
-		return <IPrice> this.connector.getDefaultFactory().createFromRdfDataset(blankNode);
+	public getQuantity(): number | undefined {
+		return Number(this.getSemanticProperty("dfc-b:quantity"));
 	}
 
-	public async getOrder(options?: IGetterOptions): Promise<IOrder | undefined> {
-		let result: IOrder | undefined = undefined;
-		const semanticId = this.getSemanticProperty("dfc-b:partOf");
-		if (semanticId) {
-			const semanticObject: Semanticable | undefined = await this.connector.fetch(semanticId, options);
-			if (semanticObject) result = <IOrder> semanticObject;
-		}
-		return result;
+	public setOffer(offer: IOffer): void {
+		this.setSemanticPropertyReference("dfc-b:concerns", offer);
+		
+		this.connector.store(offer);
 	}
 
 	public async getOffer(options?: IGetterOptions): Promise<IOffer | undefined> {
@@ -142,8 +142,8 @@ export default class OrderLine extends SemanticObject implements IOrderLine {
 		this.setSemanticPropertyLiteral("dfc-b:quantity", quantity);
 	}
 
-	public setPrice(price: IPrice): void {
-		this.setSemanticPropertyAnonymous("dfc-b:hasPrice", price);
-		
+	public getPrice(): IPrice | undefined {
+		const blankNode: any = this.getSemanticPropertyAnonymous("dfc-b:hasPrice");
+		return <IPrice> this.connector.getDefaultFactory().createFromRdfDataset(blankNode);
 	}
 }

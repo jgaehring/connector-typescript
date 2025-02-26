@@ -21,8 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 */
-import ISaleSession from "./ISaleSession.js"
 import IOffer from "./IOffer.js"
+import ISaleSession from "./ISaleSession.js"
 import { SemanticObject } from "@virtual-assembly/semantizer"
 import { Semanticable } from "@virtual-assembly/semantizer"
 import IConnector from "./IConnector.js";
@@ -87,26 +87,28 @@ export default class SaleSession extends SemanticObject implements ISaleSession 
 		
 	}
 
-	public getBeginDate(): string | undefined {
-		return this.getSemanticProperty("dfc-b:beginDate");
-	}
-
-	public addOffer(offer: IOffer): void {
-		if (offer.isSemanticObjectAnonymous()) {
-			this.addSemanticPropertyAnonymous("dfc-b:lists", offer);
-		}
-		else {
-			this.connector.store(offer);
-			this.addSemanticPropertyReference("dfc-b:lists", offer);
-		}
-	}
-
-	public setEndDate(endDate: string): void {
-		this.setSemanticPropertyLiteral("dfc-b:endDate", endDate);
+	public getEndDate(): string | undefined {
+		return this.getSemanticProperty("dfc-b:endDate");
 	}
 
 	public setQuantity(quantity: number): void {
 		this.setSemanticPropertyLiteral("dfc-b:quantity", quantity);
+	}
+
+	public getQuantity(): number | undefined {
+		return Number(this.getSemanticProperty("dfc-b:quantity"));
+	}
+
+	public getBeginDate(): string | undefined {
+		return this.getSemanticProperty("dfc-b:beginDate");
+	}
+
+	public setBeginDate(beginDate: string): void {
+		this.setSemanticPropertyLiteral("dfc-b:beginDate", beginDate);
+	}
+
+	public setEndDate(endDate: string): void {
+		this.setSemanticPropertyLiteral("dfc-b:endDate", endDate);
 	}
 
 	public async getOffers(options?: IGetterOptions): Promise<IOffer[]> {
@@ -119,15 +121,13 @@ export default class SaleSession extends SemanticObject implements ISaleSession 
 		return results;
 	}
 
-	public getQuantity(): number | undefined {
-		return Number(this.getSemanticProperty("dfc-b:quantity"));
-	}
-
-	public getEndDate(): string | undefined {
-		return this.getSemanticProperty("dfc-b:endDate");
-	}
-
-	public setBeginDate(beginDate: string): void {
-		this.setSemanticPropertyLiteral("dfc-b:beginDate", beginDate);
+	public addOffer(offer: IOffer): void {
+		if (offer.isSemanticObjectAnonymous()) {
+			this.addSemanticPropertyAnonymous("dfc-b:lists", offer);
+		}
+		else {
+			this.connector.store(offer);
+			this.addSemanticPropertyReference("dfc-b:lists", offer);
+		}
 	}
 }
