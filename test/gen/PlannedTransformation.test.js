@@ -24,27 +24,27 @@ const json = `{
 test('PlannedTransformation', async (t) => {
 	await t.test('#constructor', async (t) => {
 		const connector = new Connector();
-		const efoidhartf = new SKOSConcept({ connector, semanticId: 'http://base.com/ugoqlfqeaa' });
-		const ltmhegmkwj = [new PlannedConsumptionFlow({ connector, semanticId: 'http://base.com/xhrliagzcg' })];
-		const ihngrjwyqd = [new PlannedProductionFlow({ connector, semanticId: 'http://base.com/rsiirynomz' })];
+		const sodluwxqhg = new SKOSConcept({ connector, semanticId: 'http://base.com/cukmmzdogx' });
+		const eflyhrqkeb = [new PlannedConsumptionFlow({ connector, semanticId: 'http://base.com/fvunhyssee' })];
+		const xanelfkhqn = [new PlannedProductionFlow({ connector, semanticId: 'http://base.com/sfukieuuer' })];
 		const obj = new PlannedTransformation({
 			connector,
 			semanticId: "http://example.org/obj",
-			transformationType: efoidhartf,
-			consumptionFlows: ltmhegmkwj,
-			productionFlows: ihngrjwyqd
+			transformationType: sodluwxqhg,
+			consumptionFlows: eflyhrqkeb,
+			productionFlows: xanelfkhqn
 		});
 
 		assert.strictEqual('http://example.org/obj', obj.getSemanticId());
 
 		const actualTransformationType = await obj.getTransformationType();
-		const expectedTransformationType = efoidhartf;
+		const expectedTransformationType = sodluwxqhg;
 		await t.test(`#transformationType`, () => {
 			assertSemanticEqual(actualTransformationType, expectedTransformationType);
 		});
 
 		const actualConsumptionFlows = await obj.getPlannedConsumptionFlows();
-		const expectedConsumptionFlows = ltmhegmkwj;
+		const expectedConsumptionFlows = eflyhrqkeb;
 		await actualConsumptionFlows.forEach((actual, i) => {
 			t.test(`#consumptionFlows[${i}]`, () => {
 				assert.strictEqual(actual, expectedConsumptionFlows[i]);
@@ -52,7 +52,7 @@ test('PlannedTransformation', async (t) => {
 		});
 
 		const actualProductionFlows = await obj.getPlannedProductionFlows();
-		const expectedProductionFlows = ihngrjwyqd;
+		const expectedProductionFlows = xanelfkhqn;
 		await actualProductionFlows.forEach((actual, i) => {
 			t.test(`#productionFlows[${i}]`, () => {
 				assert.strictEqual(actual, expectedProductionFlows[i]);

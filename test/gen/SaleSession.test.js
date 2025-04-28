@@ -25,38 +25,38 @@ test('SaleSession', async (t) => {
 		
 		
 		
-		const dcydllnukl = [new Offer({ connector, semanticId: 'http://base.com/nmpxjuktdx' })];
+		const mktapgqtac = [new Offer({ connector, semanticId: 'http://base.com/ozqvewrjjp' })];
 		const obj = new SaleSession({
 			connector,
 			semanticId: "http://example.org/obj",
-			beginDate: "akjbrzloqy",
-			endDate: "nhurpssvyo",
-			quantity: 0.82092243,
-			offers: dcydllnukl
+			beginDate: "iskgohlvtr",
+			endDate: "okhscvsyed",
+			quantity: 0.6155992,
+			offers: mktapgqtac
 		});
 
 		assert.strictEqual('http://example.org/obj', obj.getSemanticId());
 
 		const actualBeginDate = obj.getBeginDate();
-		const expectedBeginDate = "akjbrzloqy";
+		const expectedBeginDate = "iskgohlvtr";
 		await t.test(`#beginDate`, () => {
 			assert.strictEqual(actualBeginDate, expectedBeginDate);
 		});
 
 		const actualEndDate = obj.getEndDate();
-		const expectedEndDate = "nhurpssvyo";
+		const expectedEndDate = "okhscvsyed";
 		await t.test(`#endDate`, () => {
 			assert.strictEqual(actualEndDate, expectedEndDate);
 		});
 
 		const actualQuantity = obj.getQuantity();
-		const expectedQuantity = 0.82092243;
+		const expectedQuantity = 0.6155992;
 		await t.test(`#quantity`, () => {
 			assert.strictEqual(actualQuantity, expectedQuantity);
 		});
 
 		const actualOffers = await obj.getOffers();
-		const expectedOffers = dcydllnukl;
+		const expectedOffers = mktapgqtac;
 		await actualOffers.forEach((actual, i) => {
 			t.test(`#offers[${i}]`, () => {
 				assert.strictEqual(actual, expectedOffers[i]);

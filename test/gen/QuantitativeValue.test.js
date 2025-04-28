@@ -22,24 +22,24 @@ const json = `{
 test('QuantitativeValue', async (t) => {
 	await t.test('#constructor', async (t) => {
 		const connector = new Connector();
-		const rctmwvuqtj = new SKOSConcept({ connector, semanticId: 'http://base.com/dbuaxqcnvv' });
+		const aaisfgdmhq = new SKOSConcept({ connector, semanticId: 'http://base.com/pyrwpgnvcu' });
 		
 		const obj = new QuantitativeValue({
 			connector,
-			unit: rctmwvuqtj,
-			value: 0.6788696
+			unit: aaisfgdmhq,
+			value: 0.75835276
 		});
 
 		
 
 		const actualUnit = await obj.getQuantityUnit();
-		const expectedUnit = rctmwvuqtj;
+		const expectedUnit = aaisfgdmhq;
 		await t.test(`#unit`, () => {
 			assertSemanticEqual(actualUnit, expectedUnit);
 		});
 
 		const actualValue = obj.getQuantityValue();
-		const expectedValue = 0.6788696;
+		const expectedValue = 0.75835276;
 		await t.test(`#value`, () => {
 			assert.strictEqual(actualValue, expectedValue);
 		});
